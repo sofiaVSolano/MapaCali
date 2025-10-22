@@ -69,12 +69,15 @@ function MapErrorFallback({ error }: { error: Error }) {
 export const Mapa: React.FC = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
   const [filteredMarkers, setFilteredMarkers] = useState<MarkerData[]>([]);
-  // Preseleccionar la categoría 'hoteles'
-  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set(["hoteles"]));
+  // Preseleccionar solo estas categorías: monumentos, centros comerciales y parques
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
+    new Set(["monumentos", "centros comerciales", "parques"]) 
+  );
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [geoJsonDataColor, setGeoJsonDataColor] = useState<any>(null);
 
-  const [showBoundaries, setShowBoundaries] = useState<boolean>(false);
+  // Mostrar la leyenda (InfoBox) y marcadores populares desde el inicio
+  const [showBoundaries, setShowBoundaries] = useState<boolean>(true);
   const [showColors, setShowColors] = useState<boolean>(false);
   const [showHomicidios, setShowHomicidios] = useState<boolean>(false);
   const [showHomicidios2023, setShowHomicidios2023] = useState<boolean>(false);
@@ -1009,42 +1012,30 @@ export const Mapa: React.FC = () => {
         />
         {/* Renderizar los marcadores filtrados */}
         <LayerGroup>
-          {filteredMarkers.map((marker, index) => {
-            // Si el marcador tiene un icono específico (por ejemplo, de Google Places), usarlo
-            const icon = marker.icono_url && marker.icono_url.trim().length > 0
-              ? new L.Icon({
-                  iconUrl: marker.icono_url,
-                  iconSize: [28, 28],
-                  iconAnchor: [14, 28],
-                  popupAnchor: [0, -20],
-                })
-              : getIconByCategory(marker.tipo);
-
-            return (
-              <Marker
-                key={index}
-                position={[marker.lat, marker.lng]}
-                icon={icon}
-              >
-                <Popup maxWidth={280}>
-                  <div style={{ lineHeight: 1.3 }}>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{marker.nombre}</div>
-                    {marker.direccion && (
-                      <div style={{ fontSize: 12, color: '#555' }}>{marker.direccion}</div>
+          {filteredMarkers.map((marker, index) => (
+            <Marker
+              key={index}
+              position={[marker.lat, marker.lng]}
+              icon={getIconByCategory(marker.tipo)}
+            >
+              <Popup maxWidth={280}>
+                <div style={{ lineHeight: 1.3 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{marker.nombre}</div>
+                  {marker.direccion && (
+                    <div style={{ fontSize: 12, color: '#555' }}>{marker.direccion}</div>
+                  )}
+                  <div style={{ fontSize: 12, marginTop: 6 }}>
+                    {marker.categoria && (
+                      <span style={{ marginRight: 8 }}>Tipo: {marker.categoria}</span>
                     )}
-                    <div style={{ fontSize: 12, marginTop: 6 }}>
-                      {marker.categoria && (
-                        <span style={{ marginRight: 8 }}>Tipo: {marker.categoria}</span>
-                      )}
-                      {typeof marker.rating === 'number' && (
-                        <span>⭐ {marker.rating.toFixed(1)}</span>
-                      )}
-                    </div>
+                    {typeof marker.rating === 'number' && (
+                      <span>⭐ {marker.rating.toFixed(1)}</span>
+                    )}
                   </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
         </LayerGroup>
 
         {/* Renderizar las imágenes en el mapa */}

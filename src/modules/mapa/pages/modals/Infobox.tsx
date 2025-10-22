@@ -116,9 +116,14 @@ const InfoBox = ({ visible, selectedTypes, onToggleCategory }: InfoBoxProps) => 
                   </Text>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {isActive && (
-                    <CheckCircleOutlined style={{ color: '#52c41a', fontSize: '14px' }} />
-                  )}
+                    {isActive && (
+                      <>
+                        <CheckCircleOutlined style={{ color: '#52c41a', fontSize: '14px' }} />
+                        <Tag color="success" style={{ margin: 0, borderRadius: '6px', fontSize: '11px' }}>
+                          Activo
+                        </Tag>
+                      </>
+                    )}
                   <Tag color={color} style={{ margin: 0, borderRadius: '6px', fontSize: '11px' }}>
                     {color}
                   </Tag>
