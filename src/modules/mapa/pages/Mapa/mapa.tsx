@@ -69,7 +69,8 @@ function MapErrorFallback({ error }: { error: Error }) {
 export const Mapa: React.FC = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
   const [filteredMarkers, setFilteredMarkers] = useState<MarkerData[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  // Preseleccionar la categoría 'hoteles'
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set(["hoteles"]));
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [geoJsonDataColor, setGeoJsonDataColor] = useState<any>(null);
 
@@ -460,6 +461,9 @@ export const Mapa: React.FC = () => {
                 case 'tourist_attraction':
                 case 'museum':
                   return 'monumentos';
+                case 'lodging':
+                case 'hotel':
+                  return 'hoteles';
                 case 'library':
                   return 'biblioteca';
                 // Otros tipos (restaurant, cafe, church, etc.) usarán ícono por defecto
@@ -612,14 +616,15 @@ export const Mapa: React.FC = () => {
   };
 
   useEffect(() => {
-    // Si no hay tipos seleccionados, mostrar todos los marcadores
+    // Si no hay tipos seleccionados, NO mostrar marcadores
     if (selectedTypes.size === 0) {
-      setFilteredMarkers(markers);
-    } else {
-      setFilteredMarkers(
-        markers.filter((marker) => selectedTypes.has(marker.tipo))
-      );
+      setFilteredMarkers([]);
+      return;
     }
+
+    setFilteredMarkers(
+      markers.filter((marker) => selectedTypes.has(marker.tipo))
+    );
   }, [selectedTypes, markers]);
 
   const handleToggleCategoryFromLegend = (category: string) => {

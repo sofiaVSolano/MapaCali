@@ -60,8 +60,8 @@ const InfoBox = ({ visible, selectedTypes, onToggleCategory }: InfoBoxProps) => 
             Click para activar/desactivar marcadores
           </Text>
           {selectedTypes.size === 0 ? (
-            <Text style={{ fontSize: '11px', color: '#52c41a', fontWeight: 500 }}>
-              ✓ Mostrando todos los marcadores
+            <Text style={{ fontSize: '11px', color: '#999', fontWeight: 500 }}>
+              ◦ Sin categorías seleccionadas — no se muestran marcadores
             </Text>
           ) : (
             <Text style={{ fontSize: '11px', color: '#667eea', fontWeight: 500 }}>
