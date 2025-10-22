@@ -440,6 +440,58 @@ export const Mapa: React.FC = () => {
           console.error('Error al cargar marcadores personalizados desde localStorage:', error);
         }
 
+        // Agregar marcadores desde JSON público
+        try {
+          const lugaresResp = await fetch("/Data/lugares_cali_completo.json");
+          if (lugaresResp.ok) {
+            const lugaresJson = await lugaresResp.json();
+            const lugares = Array.isArray(lugaresJson.lugares) ? lugaresJson.lugares : [];
+
+            const mapCategoria = (cat?: string): string => {
+              switch ((cat || '').toLowerCase()) {
+                case 'park':
+                  return 'parques';
+                case 'hospital':
+                  return 'hospitales';
+                case 'bank':
+                  return 'bancos';
+                case 'shopping_mall':
+                  return 'centros comerciales';
+                case 'tourist_attraction':
+                case 'museum':
+                  return 'monumentos';
+                case 'library':
+                  return 'biblioteca';
+                // Otros tipos (restaurant, cafe, church, etc.) usarán ícono por defecto
+                default:
+                  return 'otros';
+              }
+            };
+
+            lugares.forEach((lugar: any) => {
+              const lat = Number(lugar.latitud);
+              const lng = Number(lugar.longitud);
+              if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                allMarkers.push({
+                  nombre: lugar.nombre || 'Sin nombre',
+                  tipo: mapCategoria(lugar.categoria),
+                  lat,
+                  lng,
+                  direccion: lugar.direccion,
+                  rating: typeof lugar.rating === 'number' ? lugar.rating : undefined,
+                  categoria: lugar.categoria,
+                  place_id: lugar.place_id,
+                  icono_url: typeof lugar.icono_url === 'string' ? lugar.icono_url : undefined,
+                });
+              }
+            });
+          } else {
+            console.warn('No se pudo cargar lugares_cali_completo.json');
+          }
+        } catch (error) {
+          console.warn('Error cargando lugares del JSON público:', error);
+        }
+
         setMarkers(allMarkers);
         console.log(markers);
       } catch (error) {
@@ -952,15 +1004,42 @@ export const Mapa: React.FC = () => {
         />
         {/* Renderizar los marcadores filtrados */}
         <LayerGroup>
-          {filteredMarkers.map((marker, index) => (
-            <Marker
-              key={index}
-              position={[marker.lat, marker.lng]}
-              icon={getIconByCategory(marker.tipo)}
-            >
-              <Popup>{marker.nombre}</Popup>
-            </Marker>
-          ))}
+          {filteredMarkers.map((marker, index) => {
+            // Si el marcador tiene un icono específico (por ejemplo, de Google Places), usarlo
+            const icon = marker.icono_url && marker.icono_url.trim().length > 0
+              ? new L.Icon({
+                  iconUrl: marker.icono_url,
+                  iconSize: [28, 28],
+                  iconAnchor: [14, 28],
+                  popupAnchor: [0, -20],
+                })
+              : getIconByCategory(marker.tipo);
+
+            return (
+              <Marker
+                key={index}
+                position={[marker.lat, marker.lng]}
+                icon={icon}
+              >
+                <Popup maxWidth={280}>
+                  <div style={{ lineHeight: 1.3 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{marker.nombre}</div>
+                    {marker.direccion && (
+                      <div style={{ fontSize: 12, color: '#555' }}>{marker.direccion}</div>
+                    )}
+                    <div style={{ fontSize: 12, marginTop: 6 }}>
+                      {marker.categoria && (
+                        <span style={{ marginRight: 8 }}>Tipo: {marker.categoria}</span>
+                      )}
+                      {typeof marker.rating === 'number' && (
+                        <span>⭐ {marker.rating.toFixed(1)}</span>
+                      )}
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
         </LayerGroup>
 
         {/* Renderizar las imágenes en el mapa */}
