@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+//
 import { useState } from 'react';
 import { Drawer, Button, List, Tag, Popconfirm, message, Empty } from 'antd';
 import { DeleteOutlined, EnvironmentOutlined, PictureOutlined, UnorderedListOutlined } from '@ant-design/icons';

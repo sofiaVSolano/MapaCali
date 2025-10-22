@@ -1,0 +1,377 @@
+{
+  "total": 20,
+  "lugares": [
+    {
+      "nombre": "Platillos Voladores",
+      "categoria": "restaurant",
+      "latitud": 3.3781,
+      "longitud": -76.5349,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet.png",
+      "direccion": "Av. 5 Nte., Granada, Cali, Valle del Cauca",
+      "rating": 4.6,
+      "place_id": "ChIJ_platillos_001",
+      "categorias_completas": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 1850
+    },
+    {
+      "nombre": "Parque del Perro",
+      "categoria": "park",
+      "latitud": 3.3781,
+      "longitud": -76.5349,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/park-71.png",
+      "icono_background_color": "#4DB546",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet.png",
+      "direccion": "Av. 4 Nte., Granada, Cali, Valle del Cauca",
+      "rating": 4.5,
+      "place_id": "ChIJ_parque_perro_001",
+      "categorias_completas": [
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 3200
+    },
+    {
+      "nombre": "Museo La Tertulia",
+      "categoria": "museum",
+      "latitud": 3.4319,
+      "longitud": -76.5433,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/museum-71.png",
+      "icono_background_color": "#13B5C7",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/museum_pinlet.png",
+      "direccion": "Av. Colombia #5-105 Oeste, Cali, Valle del Cauca",
+      "rating": 4.4,
+      "place_id": "ChIJ_museo_tertulia_001",
+      "categorias_completas": [
+        "museum",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 1420
+    },
+    {
+      "nombre": "Unicentro",
+      "categoria": "shopping_mall",
+      "latitud": 3.3474,
+      "longitud": -76.5297,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+      "icono_background_color": "#4B96F3",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet.png",
+      "direccion": "Calle 5 #34-52, Cali, Valle del Cauca",
+      "rating": 4.3,
+      "place_id": "ChIJ_unicentro_001",
+      "categorias_completas": [
+        "shopping_mall",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 8950
+    },
+    {
+      "nombre": "Cristo Rey",
+      "categoria": "tourist_attraction",
+      "latitud": 3.4229,
+      "longitud": -76.5578,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icono_background_color": "#13B5C7",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet.png",
+      "direccion": "Los Cristales, Cali, Valle del Cauca",
+      "rating": 4.7,
+      "place_id": "ChIJ_cristo_rey_001",
+      "categorias_completas": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 5230
+    },
+    {
+      "nombre": "Ringlete",
+      "categoria": "restaurant",
+      "latitud": 3.4372,
+      "longitud": -76.5225,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet.png",
+      "direccion": "San Antonio, Cali, Valle del Cauca",
+      "rating": 4.7,
+      "place_id": "ChIJ_ringlete_001",
+      "categorias_completas": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 2340
+    },
+    {
+      "nombre": "Macondo Café",
+      "categoria": "cafe",
+      "latitud": 3.4516,
+      "longitud": -76.532,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/cafe-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/cafe_pinlet.png",
+      "direccion": "Carrera 6 #2-30, Cali, Valle del Cauca",
+      "rating": 4.5,
+      "place_id": "ChIJ_macondo_001",
+      "categorias_completas": [
+        "cafe",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 980
+    },
+    {
+      "nombre": "Chipichape",
+      "categoria": "shopping_mall",
+      "latitud": 3.4632,
+      "longitud": -76.5324,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+      "icono_background_color": "#4B96F3",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet.png",
+      "direccion": "Calle 38 Norte #6N-35, Cali, Valle del Cauca",
+      "rating": 4.4,
+      "place_id": "ChIJ_chipichape_001",
+      "categorias_completas": [
+        "shopping_mall",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 12400
+    },
+    {
+      "nombre": "Gato de Tejada",
+      "categoria": "tourist_attraction",
+      "latitud": 3.4516,
+      "longitud": -76.5319,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icono_background_color": "#13B5C7",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet.png",
+      "direccion": "Calle 5, Centro, Cali, Valle del Cauca",
+      "rating": 4.2,
+      "place_id": "ChIJ_gato_001",
+      "categorias_completas": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 4650
+    },
+    {
+      "nombre": "Parque de los Poetas",
+      "categoria": "park",
+      "latitud": 3.4516,
+      "longitud": -76.5319,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/park-71.png",
+      "icono_background_color": "#4DB546",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet.png",
+      "direccion": "San Antonio, Cali, Valle del Cauca",
+      "rating": 4.3,
+      "place_id": "ChIJ_poetas_001",
+      "categorias_completas": [
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 2180
+    },
+    {
+      "nombre": "Hospital Universitario del Valle",
+      "categoria": "hospital",
+      "latitud": 3.3795,
+      "longitud": -76.5319,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/hospital-71.png",
+      "icono_background_color": "#F88181",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/hospital_pinlet.png",
+      "direccion": "Calle 5 #36-08, Cali, Valle del Cauca",
+      "rating": 3.8,
+      "place_id": "ChIJ_hospital_valle_001",
+      "categorias_completas": [
+        "hospital",
+        "health",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 1560
+    },
+    {
+      "nombre": "Bancolombia Centro",
+      "categoria": "bank",
+      "latitud": 3.4516,
+      "longitud": -76.5319,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bank-71.png",
+      "icono_background_color": "#909CE1",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/bank_pinlet.png",
+      "direccion": "Carrera 4 #10-71, Cali, Valle del Cauca",
+      "rating": 4.0,
+      "place_id": "ChIJ_bancolombia_001",
+      "categorias_completas": [
+        "bank",
+        "atm",
+        "finance",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 875
+    },
+    {
+      "nombre": "Zahavi",
+      "categoria": "restaurant",
+      "latitud": 3.3755,
+      "longitud": -76.5354,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet.png",
+      "direccion": "Calle 9 Nte. #6N-30, Granada, Cali, Valle del Cauca",
+      "rating": 4.5,
+      "place_id": "ChIJ_zahavi_001",
+      "categorias_completas": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 1120
+    },
+    {
+      "nombre": "Museo Arqueológico La Merced",
+      "categoria": "museum",
+      "latitud": 3.4516,
+      "longitud": -76.532,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/museum-71.png",
+      "icono_background_color": "#13B5C7",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/museum_pinlet.png",
+      "direccion": "Carrera 4 #6-59, Cali, Valle del Cauca",
+      "rating": 4.6,
+      "place_id": "ChIJ_merced_001",
+      "categorias_completas": [
+        "museum",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 890
+    },
+    {
+      "nombre": "Parque del Avión",
+      "categoria": "park",
+      "latitud": 3.3924,
+      "longitud": -76.5197,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/park-71.png",
+      "icono_background_color": "#4DB546",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet.png",
+      "direccion": "Ciudad Jardín, Cali, Valle del Cauca",
+      "rating": 4.4,
+      "place_id": "ChIJ_avion_001",
+      "categorias_completas": [
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 2670
+    },
+    {
+      "nombre": "La Comitiva",
+      "categoria": "restaurant",
+      "latitud": 3.4125,
+      "longitud": -76.5249,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet.png",
+      "direccion": "Calle 16 Norte #9N-20, Cali, Valle del Cauca",
+      "rating": 4.8,
+      "place_id": "ChIJ_comitiva_001",
+      "categorias_completas": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 3450
+    },
+    {
+      "nombre": "Torre de Cali",
+      "categoria": "tourist_attraction",
+      "latitud": 3.4372,
+      "longitud": -76.5425,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icono_background_color": "#13B5C7",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet.png",
+      "direccion": "Avenida Colombia #2-72, Cali, Valle del Cauca",
+      "rating": 4.1,
+      "place_id": "ChIJ_torre_001",
+      "categorias_completas": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 3890
+    },
+    {
+      "nombre": "Cosmocentro",
+      "categoria": "shopping_mall",
+      "latitud": 3.4175,
+      "longitud": -76.5576,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+      "icono_background_color": "#4B96F3",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet.png",
+      "direccion": "Carrera 100 #11-60, Cali, Valle del Cauca",
+      "rating": 4.2,
+      "place_id": "ChIJ_cosmo_001",
+      "categorias_completas": [
+        "shopping_mall",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 7820
+    },
+    {
+      "nombre": "Bourbon Coffee",
+      "categoria": "cafe",
+      "latitud": 3.3781,
+      "longitud": -76.5349,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/cafe-71.png",
+      "icono_background_color": "#FF9E67",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/cafe_pinlet.png",
+      "direccion": "Granada, Cali, Valle del Cauca",
+      "rating": 4.6,
+      "place_id": "ChIJ_bourbon_001",
+      "categorias_completas": [
+        "cafe",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 1540
+    },
+    {
+      "nombre": "Iglesia La Ermita",
+      "categoria": "church",
+      "latitud": 3.4472,
+      "longitud": -76.5372,
+      "icono_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/worship-71.png",
+      "icono_background_color": "#7B9EB0",
+      "icono_mask_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/worship_pinlet.png",
+      "direccion": "Carrera 1 con Calle 13, Cali, Valle del Cauca",
+      "rating": 4.8,
+      "place_id": "ChIJ_ermita_001",
+      "categorias_completas": [
+        "church",
+        "place_of_worship",
+        "point_of_interest",
+        "establishment"
+      ],
+      "total_ratings": 6720
+    }
+  ]
+}

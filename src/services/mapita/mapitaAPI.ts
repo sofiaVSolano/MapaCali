@@ -4,13 +4,15 @@ import { MarkerData, ResponseListaMarcadores } from "../types";
 
 export const getListaMarcadores =
   async (): Promise<ResponseListaMarcadores> => {
-    const response = await clientMapa.get<{
-      data: MarkerData[];
-    }>(`marcadores`, {});
-
-    return {
-      data: response.data.data,
-    };
+    try {
+      const response = await clientMapa.get<{ data: MarkerData[] }>(`marcadores`, {
+        timeout: 5000,
+      });
+      return { data: response.data.data };
+    } catch (error) {
+      console.warn("No se pudo obtener la lista de marcadores desde la API, usando vacío.", error);
+      return { data: [] };
+    }
   };
 
   

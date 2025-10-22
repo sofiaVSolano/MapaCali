@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useCallback } from "react";
+import { ErrorBoundary } from 'react-error-boundary';
 import {
   MapContainer,
   TileLayer,
@@ -54,6 +55,16 @@ import { GiColombia } from "react-icons/gi";
 import { IoLibrary } from "react-icons/io5";
 import { FaRoadBarrier } from "react-icons/fa6";
 import HeatmapLayer from "./mapita";
+
+function MapErrorFallback({ error }: { error: Error }) {
+  return (
+    <div style={{ padding: 40, textAlign: 'center', color: 'red', background: '#fffbe6' }}>
+      <h2>⚠️ Error al mostrar el mapa</h2>
+      <pre style={{ color: 'red', fontSize: 14 }}>{error.message}</pre>
+      <p>Si subiste una imagen, verifica que el archivo sea válido y recarga la página.</p>
+    </div>
+  );
+}
 
 export const Mapa: React.FC = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
@@ -145,9 +156,9 @@ export const Mapa: React.FC = () => {
 
     const fetchGeoJson = async () => {
       try {
-        getListaMarcadores();
+  // Evitar llamada innecesaria a la API aquí; se carga en fetchData()
 
-        const comunasResponse = await fetch("/public/Data/comunasCoo.geojson");
+  const comunasResponse = await fetch("/Data/comunasCoo.geojson");
         const comunasData = await comunasResponse.json();
         setGeoJsonData(comunasData);
         setGeoJsonDataColor(comunasData);
@@ -359,11 +370,11 @@ export const Mapa: React.FC = () => {
         console.log("Hurto 2018:", heatDataRobos2018);
         console.log("Accidentes 2019:", headDataAccidentesA2019);
 
-        const riosResponse = await fetch("/public/Data/rios.geojson");
+  const riosResponse = await fetch("/Data/rios.geojson");
         const riosData = await riosResponse.json();
         setRiosGeoJson(riosData);
 
-        const ciclorutaResponse = await fetch("public/Data/cicloRuta.geojson");
+  const ciclorutaResponse = await fetch("/Data/cicloRuta.geojson");
         const ciclorutaData = await ciclorutaResponse.json();
         setCiclorutaGeoJson(ciclorutaData);
       } catch (error) {
@@ -762,18 +773,19 @@ export const Mapa: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: "100vh", 
-      width: "100vw",
-      margin: 0,
-      padding: 0,
-      overflow: "hidden"
-    }}>
+    <ErrorBoundary FallbackComponent={MapErrorFallback}>
+      <div style={{ 
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "100vh", 
+        width: "100vw",
+        margin: 0,
+        padding: 0,
+        overflow: "hidden"
+      }}>
       {/* Botones flotantes para abrir los modales */}
       <div className="floating-buttons-container">
         <Button
@@ -953,46 +965,55 @@ export const Mapa: React.FC = () => {
 
         {/* Renderizar las imágenes en el mapa */}
         <LayerGroup>
-          {imageMarkers.map((imageMarker, index) => {
-            const imageIcon = new L.Icon({
-              iconUrl: imageMarker.imageUrl,
-              iconSize: [50, 50],
-              iconAnchor: [25, 25],
-              popupAnchor: [0, -25],
-              className: 'image-marker-icon'
-            });
+          {imageMarkers
+            .filter((im) => Number.isFinite(im.lat) && Number.isFinite(im.lng))
+            .map((imageMarker, index) => {
+              const iconUrl = imageMarker.imageUrl && imageMarker.imageUrl.trim().length > 0
+                ? imageMarker.imageUrl
+                : "/Icons/marcadorBlanca.avif"; // Fallback seguro desde public/
 
-            return (
-              <Marker
-                key={`image-${index}`}
-                position={[imageMarker.lat, imageMarker.lng]}
-                icon={imageIcon}
-              >
-                <Popup maxWidth={300}>
-                  <div style={{ textAlign: 'center' }}>
-                    {imageMarker.nombre && (
-                      <h4 style={{ marginBottom: '10px' }}>{imageMarker.nombre}</h4>
-                    )}
-                    <img 
-                      src={imageMarker.imageUrl} 
-                      alt={imageMarker.nombre || 'Imagen'}
-                      style={{ 
-                        width: '100%', 
-                        maxWidth: '250px',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <p style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
-                      Lat: {imageMarker.lat.toFixed(6)}, Lng: {imageMarker.lng.toFixed(6)}
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+              const imageIcon = new L.Icon({
+                iconUrl,
+                iconSize: [50, 50],
+                iconAnchor: [25, 25],
+                popupAnchor: [0, -25],
+                className: 'image-marker-icon'
+              });
+
+              return (
+                <Marker
+                  key={`image-${index}`}
+                  position={[imageMarker.lat, imageMarker.lng]}
+                  icon={imageIcon}
+                >
+                  <Popup maxWidth={300}>
+                    <div style={{ textAlign: 'center' }}>
+                      {imageMarker.nombre && (
+                        <h4 style={{ marginBottom: '10px' }}>{imageMarker.nombre}</h4>
+                      )}
+                      {imageMarker.imageUrl && imageMarker.imageUrl.trim().length > 0 && (
+                        <img
+                          src={imageMarker.imageUrl}
+                          alt={imageMarker.nombre || 'Imagen'}
+                          style={{
+                            width: '100%',
+                            maxWidth: '250px',
+                            borderRadius: '8px'
+                          }}
+                        />
+                      )}
+                      <p style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+                        Lat: {imageMarker.lat.toFixed(6)}, Lng: {imageMarker.lng.toFixed(6)}
+                      </p>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
         </LayerGroup>
       </MapContainer>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };
 

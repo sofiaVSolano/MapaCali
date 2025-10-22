@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+//
 import React, {  } from "react";
 import { Switch, Card, Space, Collapse } from "antd";
-import { ComunaProperties } from "../../../services/types";
 import {
   EnvironmentOutlined,
   BorderOutlined,

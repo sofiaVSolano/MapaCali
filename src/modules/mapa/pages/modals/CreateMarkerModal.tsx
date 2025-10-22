@@ -109,6 +109,8 @@ const CreateMarkerModal: React.FC<{
 
   // Obtener detalles del lugar seleccionado
   const handleSelectPlace = (value: string, option: any) => {
+    // Marcar 'value' como usado para evitar error TS6133 cuando no se necesita
+    void value;
     if (!placesService.current || !option.placeId) {
       return;
     }
