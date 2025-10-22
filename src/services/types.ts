@@ -23,11 +23,13 @@ export interface MarkerData {
   lat: number;
   lng: number;
   // Campos opcionales para mostrar más información en el popup
+  id?: string; // identificador estable para favoritos/compartir (place_id o derivado)
   direccion?: string;
   rating?: number;
   categoria?: string; // categoría original de la fuente (en inglés, por ejemplo)
   place_id?: string;
   icono_url?: string; // URL de icono remota para este marcador
+  favorito?: boolean; // estado UI opcional
 }
 
 export interface MarketDataBack{

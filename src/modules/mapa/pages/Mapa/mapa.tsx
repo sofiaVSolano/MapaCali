@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   MapContainer,
@@ -9,6 +9,7 @@ import {
   Popup,
   GeoJSON,
   LayerGroup,
+  Circle,
 } from "react-leaflet";
 import L, { PathOptions } from "leaflet";
 import "leaflet.heat";
@@ -20,6 +21,7 @@ import ModalComunaInfo from "../modals/ModalComunaInfo";
 import CreateMarkerModal from "../modals/CreateMarkerModal";
 import CreateImageMarkerModal, { ImageMarkerData } from "../modals/CreateImageMarkerModal";
 import InfoBox from "../modals/Infobox";
+import TouristControls from "../modals/TouristControls";
 import FilterMenu from "../../../FilterMenu/pages/FilterMenu";
 import SavedMarkersPanel from "../modals/SavedMarkersPanel";
 import {
@@ -106,6 +108,15 @@ export const Mapa: React.FC = () => {
   const [RiosGeoJson, setRiosGeoJson] = useState<any>(null);
 
   const [counts, setCounts] = useState<CommuneMarkerCounts>({});
+
+  // Interactividad turística
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [nearMeOnly, setNearMeOnly] = useState<boolean>(false);
+  const [radiusKm, setRadiusKm] = useState<number>(3);
+  const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [showTourismHeat, setShowTourismHeat] = useState<boolean>(false);
 
   const handleAddMarker = (newMarker: MarkerData) => {
     const updatedMarkers = [...markers, newMarker];
@@ -412,7 +423,7 @@ export const Mapa: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const responseAPI = await getListaMarcadores();
+  const responseAPI = await getListaMarcadores();
         const allMarkers: MarkerData[] = [];
 
         if (Array.isArray(responseAPI.data)) {
@@ -479,11 +490,13 @@ export const Mapa: React.FC = () => {
               const lat = Number(lugar.latitud);
               const lng = Number(lugar.longitud);
               if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                const id = (lugar.place_id && String(lugar.place_id)) || `${(lugar.nombre||'').trim()}-${lat.toFixed(5)}-${lng.toFixed(5)}`;
                 allMarkers.push({
                   nombre: lugar.nombre || 'Sin nombre',
                   tipo: mapCategoria(lugar.categoria),
                   lat,
                   lng,
+                  id,
                   direccion: lugar.direccion,
                   rating: typeof lugar.rating === 'number' ? lugar.rating : undefined,
                   categoria: lugar.categoria,
@@ -498,6 +511,13 @@ export const Mapa: React.FC = () => {
         } catch (error) {
           console.warn('Error cargando lugares del JSON público:', error);
         }
+
+        // Asignar id a marcadores sin id explícito (API/local)
+        allMarkers.forEach((m) => {
+          if (!m.id) {
+            m.id = `${m.nombre.trim()}-${m.lat.toFixed(5)}-${m.lng.toFixed(5)}`;
+          }
+        });
 
         setMarkers(allMarkers);
         console.log(markers);
@@ -514,6 +534,19 @@ export const Mapa: React.FC = () => {
     setSelectedComuna(comuna);
     setIsModalVisible(true);
   };
+
+  // Cargar favoritos al iniciar
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('favoritePlaces');
+      if (raw) {
+        const arr = JSON.parse(raw) as string[];
+        setFavoriteIds(new Set(arr));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const boundaryStyle: (
     feature?: GeoJSON.Feature<GeoJSON.Geometry, ComunaProperties>
@@ -618,6 +651,17 @@ export const Mapa: React.FC = () => {
     });
   };
 
+  // Distancia haversine usando turf (km)
+  const distanceKm = (a: {lat:number; lng:number}, b: {lat:number; lng:number}) => {
+    try {
+      const p1 = turf.point([a.lng, a.lat]);
+      const p2 = turf.point([b.lng, b.lat]);
+      return turf.distance(p1, p2, { units: 'kilometers' });
+    } catch {
+      return Infinity;
+    }
+  };
+
   useEffect(() => {
     // Si no hay tipos seleccionados, NO mostrar marcadores
     if (selectedTypes.size === 0) {
@@ -625,10 +669,30 @@ export const Mapa: React.FC = () => {
       return;
     }
 
-    setFilteredMarkers(
-      markers.filter((marker) => selectedTypes.has(marker.tipo))
-    );
-  }, [selectedTypes, markers]);
+    let list = markers.filter((m) => selectedTypes.has(m.tipo));
+
+    // Búsqueda por texto
+    const q = searchQuery.trim().toLowerCase();
+    if (q.length > 0) {
+      list = list.filter((m) =>
+        (m.nombre || '').toLowerCase().includes(q) ||
+        (m.tipo || '').toLowerCase().includes(q) ||
+        (m.categoria || '').toLowerCase().includes(q)
+      );
+    }
+
+    // Solo favoritos
+    if (favoritesOnly) {
+      list = list.filter((m) => m.id && favoriteIds.has(m.id));
+    }
+
+    // Cercanos a mí
+    if (nearMeOnly && userLocation) {
+      list = list.filter((m) => distanceKm(userLocation, { lat: m.lat, lng: m.lng }) <= radiusKm);
+    }
+
+    setFilteredMarkers(list);
+  }, [selectedTypes, markers, searchQuery, favoritesOnly, favoriteIds, nearMeOnly, userLocation, radiusKm]);
 
   const handleToggleCategoryFromLegend = (category: string) => {
     const newSelectedTypes = new Set(selectedTypes);
@@ -654,6 +718,34 @@ export const Mapa: React.FC = () => {
   const handleToggleBoundaries = (checked: boolean) => {
     setShowBoundaries(checked);
   };
+
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => {
+        // ignore errors silently for UX
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  };
+
+  const toggleFavorite = (id?: string) => {
+    if (!id) return;
+    const next = new Set(favoriteIds);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setFavoriteIds(next);
+    try {
+      localStorage.setItem('favoritePlaces', JSON.stringify(Array.from(next)));
+    } catch {}
+  };
+
+  const tourismHeatData = useMemo(() => {
+    const src = filteredMarkers.length ? filteredMarkers : markers;
+    return src.map((m) => [m.lat, m.lng, Math.max(0.5, Math.min(2, (m.rating || 4) / 2.5))]);
+  }, [filteredMarkers, markers]);
 
   const handleToggleCicloRuta = (checked: boolean) => {
     setShowCicloRuta(checked);
@@ -993,6 +1085,21 @@ export const Mapa: React.FC = () => {
           />
         )}
         {/* limites de las comunas y modal */}
+        <TouristControls
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onLocateMe={handleLocateMe}
+          hasLocation={!!userLocation}
+          nearMeOnly={nearMeOnly}
+          onToggleNearMeOnly={setNearMeOnly}
+          radiusKm={radiusKm}
+          onRadiusChange={setRadiusKm}
+          favoritesOnly={favoritesOnly}
+          onToggleFavoritesOnly={setFavoritesOnly}
+          showTourismHeat={showTourismHeat}
+          onToggleTourismHeat={setShowTourismHeat}
+          resultsCount={filteredMarkers.length}
+        />
         <InfoBox 
           visible={showBoundaries} 
           selectedTypes={selectedTypes}
@@ -1011,6 +1118,25 @@ export const Mapa: React.FC = () => {
           onClose={() => setIsModalVisible(false)}
         />
         {/* Renderizar los marcadores filtrados */}
+        {userLocation && (
+          <LayerGroup>
+            <Marker position={[userLocation.lat, userLocation.lng]} icon={new L.DivIcon({
+              html: '<div style="width:16px;height:16px;background:#2f54eb;border:2px solid white;border-radius:50%"></div>',
+              className: 'user-location-icon',
+              iconSize: [16,16],
+              iconAnchor: [8,8]
+            })}>
+              <Popup>Tu ubicación aproximada</Popup>
+            </Marker>
+            {nearMeOnly && (
+              <Circle
+                center={[userLocation.lat, userLocation.lng]}
+                radius={radiusKm * 1000}
+                pathOptions={{ color: '#2f54eb', fillOpacity: 0.05 }}
+              />
+            )}
+          </LayerGroup>
+        )}
         <LayerGroup>
           {filteredMarkers.map((marker, index) => (
             <Marker
@@ -1020,11 +1146,11 @@ export const Mapa: React.FC = () => {
             >
               <Popup maxWidth={280}>
                 <div style={{ lineHeight: 1.3 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{marker.nombre}</div>
+                  <div style={{ fontWeight: 600, marginBottom: 6 }}>{marker.nombre}</div>
                   {marker.direccion && (
-                    <div style={{ fontSize: 12, color: '#555' }}>{marker.direccion}</div>
+                    <div style={{ fontSize: 12, color: '#555', marginBottom: 6 }}>{marker.direccion}</div>
                   )}
-                  <div style={{ fontSize: 12, marginTop: 6 }}>
+                  <div style={{ fontSize: 12, marginBottom: 8 }}>
                     {marker.categoria && (
                       <span style={{ marginRight: 8 }}>Tipo: {marker.categoria}</span>
                     )}
@@ -1032,11 +1158,44 @@ export const Mapa: React.FC = () => {
                       <span>⭐ {marker.rating.toFixed(1)}</span>
                     )}
                   </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => toggleFavorite(marker.id)}
+                      style={{
+                        padding: '6px 10px', borderRadius: 8, border: '1px solid #f0f0f0', cursor: 'pointer',
+                        background: favoriteIds.has(marker.id || '') ? '#fff0f6' : '#fafafa', color: '#eb2f96'
+                      }}
+                    >{favoriteIds.has(marker.id || '') ? '♥ Quitar' : '♡ Favorito'}</button>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(marker.nombre)}&query_place_id=${encodeURIComponent(marker.place_id || '')}`}
+                      target="_blank" rel="noreferrer"
+                      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #f0f0f0', background: '#fafafa' }}
+                    >Abrir en Maps</a>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${marker.lat},${marker.lng}`}
+                      target="_blank" rel="noreferrer"
+                      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #f0f0f0', background: '#fafafa' }}
+                    >Cómo llegar</a>
+                    {marker.direccion && (
+                      <button
+                        onClick={() => navigator.clipboard?.writeText(marker.direccion || '')}
+                        style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #f0f0f0', background: '#fafafa', cursor: 'pointer' }}
+                      >Copiar dirección</button>
+                    )}
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(`https://www.google.com/maps/?q=${marker.lat},${marker.lng}`)}
+                      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #f0f0f0', background: '#fafafa', cursor: 'pointer' }}
+                    >Compartir</button>
+                  </div>
                 </div>
               </Popup>
             </Marker>
           ))}
         </LayerGroup>
+
+        {showTourismHeat && (
+          <HeatmapLayer data={tourismHeatData as any} />
+        )}
 
         {/* Renderizar las imágenes en el mapa */}
         <LayerGroup>
