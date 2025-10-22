@@ -40,7 +40,8 @@ const TouristControls: React.FC<TouristControlsProps> = ({
       style={{
         position: 'absolute',
         top: 16,
-        right: 16,
+        left: '50%',
+        transform: 'translateX(-50%)',
         zIndex: 1100,
         width: 320,
         maxWidth: 'calc(100vw - 32px)'
