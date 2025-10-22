@@ -29,6 +29,12 @@ export const crearMarcadorMapa = async (marker: MarkerData): Promise<any> => {
   });
 };
 
+export const crearMarcadorImagen = async (imageMarker: any): Promise<any> => {
+  return await clientMapa.post<any>("marcadores-imagen", imageMarker, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
+
 
 
 export const obtenerDatos = async (tipo: string): Promise<any> => {

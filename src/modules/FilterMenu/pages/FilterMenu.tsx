@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {  } from "react";
-import { Menu, Switch, Card, Space, Collapse } from "antd";
-import { MenuProps } from "antd/es/menu";
+import { Switch, Card, Space, Collapse } from "antd";
 import { ComunaProperties } from "../../../services/types";
 import {
   EnvironmentOutlined,
@@ -12,9 +11,9 @@ import {
 } from "@ant-design/icons"; // Iconos de Ant Design
 import { FaSkullCrossbones, FaCarCrash  } from "react-icons/fa";
 import { GiRobber } from "react-icons/gi";
+import "./FilterMenu.css";
 
 interface FilterMenuProps {
-  onFilterChange: (selectedKeys: string[]) => void;
   onToggleBoundaries: (checked: boolean) => void;
   onToggleColors: (checked: boolean) => void;
   showBoundaries: boolean;
@@ -27,7 +26,6 @@ interface FilterMenuProps {
   showRobos2020: boolean;
   showAccidentesA2018: boolean;
   showAccidentesA2019: boolean;
-  onOpenModal: (comuna: ComunaProperties) => void;
   onToggleCicloRutas: (checked: boolean) => void;
   onToggleRios: (checked: boolean) => void;
   onToggleHomicidios: (checked: boolean) => void;
@@ -36,13 +34,11 @@ interface FilterMenuProps {
   onToggleRobos2020: (checked: boolean) => void;
   onToggleAccidentesA2018: (checked: boolean) => void;
   onToggleAccidentesA2019: (checked: boolean) => void;
-
 }
-const { Panel } = Collapse;
+// AntD v5: use Collapse.items API instead of Panel children
 
 
 const FilterMenu: React.FC<FilterMenuProps> = ({
-  onFilterChange,
   onToggleBoundaries,
   onToggleColors,
   showBoundaries,
@@ -64,11 +60,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
   onToggleAccidentesA2018,
   onToggleAccidentesA2019,
 }) => {
-  const handleMenuSelect: MenuProps["onSelect"] = (e) => {
-    const filtered = e.selectedKeys.filter((key) => !key.includes("heatmap"));
-    onFilterChange(filtered as string[]);
-  };
-
   const handleBoundariesChange = (checked: boolean) => {
     onToggleBoundaries(checked);
   };
@@ -118,15 +109,29 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
         top: "10px",
         left: "50px",
         zIndex: 1000,
-        width: "280px",
+        width: "300px",
+        animation: "slideInLeft 0.5s ease-out",
       }}
     >
       <Card
-        title="Capas del mapa"
-        bordered
+        title={
+          <span style={{ 
+            fontSize: "16px", 
+            fontWeight: "600",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text"
+          }}>
+            🗺️ Capas del Mapa
+          </span>
+        }
+        bordered={false}
         style={{
-          borderRadius: "10px",
-          boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+          borderRadius: "16px",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          backdropFilter: "blur(10px)",
+          background: "rgba(255, 255, 255, 0.98)",
         }}
       >
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
@@ -216,213 +221,176 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
             <Switch checked={showRios} onChange={handleRios} />
           </div>
 
-          <Collapse 
-      bordered={false} 
-      style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
-    >
-      <Panel header="Homicidios" key="1">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <FaSkullCrossbones
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Homicidios 2022</span>
-          </span>
-          <Switch checked={showHomicidios} onChange={handleHomicidios} />
-        </div>
+          <Collapse
+            bordered={false}
+            style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
+            items={[
+              {
+                key: 'homicidios',
+                label: 'Homicidios',
+                children: (
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <FaSkullCrossbones
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Homicidios 2022</span>
+                      </span>
+                      <Switch checked={showHomicidios} onChange={handleHomicidios} />
+                    </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <FaSkullCrossbones
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Homicidios 2023</span>
-          </span>
-          <Switch
-            checked={showHomicidios2023}
-            onChange={handleHomicidios2023}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <FaSkullCrossbones
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Homicidios 2023</span>
+                      </span>
+                      <Switch
+                        checked={showHomicidios2023}
+                        onChange={handleHomicidios2023}
+                      />
+                    </div>
+                  </div>
+                )
+              }
+            ]}
           />
-        </div>
 
-      </Panel>
-    </Collapse>
+          <Collapse
+            bordered={false}
+            style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
+            items={[
+              {
+                key: 'robos',
+                label: 'Robos',
+                children: (
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <GiRobber
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Robos 2018</span>
+                      </span>
+                      <Switch checked={showRobos2019} onChange={handleRobos2019} />
+                    </div>
 
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <GiRobber
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Robos 2019</span>
+                      </span>
+                      <Switch checked={showRobos2020} onChange={handleRobos2020} />
+                    </div>
+                  </div>
+                )
+              }
+            ]}
+          />
 
-    <Collapse 
-      bordered={false} 
-      style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
-    >
-      <Panel header="Robos" key="1">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <GiRobber
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Robos 2018</span>
-          </span>
-          <Switch checked={showRobos2019} onChange={handleRobos2019} />
-        </div>
+          <Collapse
+            bordered={false}
+            style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
+            items={[
+              {
+                key: 'accidentes',
+                label: 'Accidentes Automovilísticos',
+                children: (
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <FaCarCrash
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Accidentes 2018</span>
+                      </span>
+                      <Switch checked={showAccidentesA2018} onChange={handleAccidentesA2018} />
+                    </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <GiRobber
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Robos 2019</span>
-          </span>
-          <Switch checked={showRobos2020} onChange={handleRobos2020} />
-        </div>
-      </Panel>
-    </Collapse>
-
-
-    <Collapse
-      bordered={false}
-      style={{ marginBottom: "2px", border: "1px solid #ccc", borderRadius: "8px" }}
-    >
-      <Panel header="Accidentes Automovilísticos" key="1">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <FaCarCrash
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Accidentes 2018</span>
-          </span>
-          <Switch checked={showAccidentesA2018} onChange={handleAccidentesA2018} />
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            <FaCarCrash
-              style={{
-                color: "#f5222d",
-                fontSize: "20px",
-                marginRight: "10px",
-              }}
-            />
-            <span>Accidentes 2019</span>
-          </span>
-          <Switch checked={showAccidentesA2019} onChange={handleAccidentesA2019} />
-        </div>
-      </Panel>
-    </Collapse>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        <FaCarCrash
+                          style={{
+                            color: "#f5222d",
+                            fontSize: "20px",
+                            marginRight: "10px",
+                          }}
+                        />
+                        <span>Accidentes 2019</span>
+                      </span>
+                      <Switch checked={showAccidentesA2019} onChange={handleAccidentesA2019} />
+                    </div>
+                  </div>
+                )
+              }
+            ]}
+          />
     
         </Space>
       </Card>
-
-      <Menu
-        mode="inline"
-        style={{ width: 256 }}
-        theme="light"
-        multiple
-        onSelect={handleMenuSelect}
-        onDeselect={handleMenuSelect}
-      >
-
-        <Menu.SubMenu key="categories" title="Categorías">
-        <Menu.Item key="comunas">Comunas</Menu.Item>
-
-          <Menu.SubMenu key="education" title="Educación">
-            <Menu.Item key="colegio">Colegios</Menu.Item>
-            <Menu.Item key="universidades">Universidades</Menu.Item>
-            <Menu.Item key="biblioteca">Bibliotecas</Menu.Item>
-          </Menu.SubMenu>
-
-          <Menu.SubMenu key="services" title="Servicios">
-            <Menu.Item key="hospital">Hospitales</Menu.Item>
-            <Menu.Item key="hoteles">Hoteles</Menu.Item>
-            <Menu.Item key="bancos">Bancos</Menu.Item>
-            <Menu.Item key="estaciones mio">Estaciones MIO</Menu.Item>
-            <Menu.Item key="fotomultas">Fotomultas</Menu.Item>
-            <Menu.Item key="estaciones electricas">
-              Estaciones Eléctricas
-            </Menu.Item>
-            <Menu.Item key="ptap">Plantas Tratamiento De Agua</Menu.Item>
-
-          </Menu.SubMenu>
-
-          <Menu.SubMenu key="entertainment" title="Entretenimiento">
-            <Menu.Item key="centros comerciales">Centros Comerciales</Menu.Item>
-            <Menu.Item key="monumentos">Monumentos</Menu.Item>
-            <Menu.Item key="cines">Cines</Menu.Item>
-          </Menu.SubMenu>
-
-          <Menu.SubMenu key="sports" title="Deporte">
-            <Menu.Item key="unidades deportivas">Unidades Deportivas</Menu.Item>
-            <Menu.Item key="clubs deportivos">Clubs Deportivos</Menu.Item>
-          </Menu.SubMenu>
-
-          <Menu.SubMenu key="naturaleza" title="Naturaleza">
-            <Menu.Item key="humedales">Humedales</Menu.Item>
-            <Menu.Item key="parques">Parques</Menu.Item>
-          </Menu.SubMenu>
-
-          <Menu.SubMenu key="seguridad" title="Seguridad">
-            <Menu.Item key="cais">CAIS Policia</Menu.Item>
-            <Menu.Item key="hueco">huecos</Menu.Item>
-          </Menu.SubMenu>
-
-        </Menu.SubMenu>
-      </Menu>
     </div>
   );
 };

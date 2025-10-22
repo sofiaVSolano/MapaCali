@@ -1,0 +1,145 @@
+/* Animación de entrada del menú */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Estilos mejorados para los switches */
+.ant-switch-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.ant-switch {
+  transition: all 0.3s ease !important;
+}
+
+.ant-switch:hover {
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Mejorar espaciado de elementos */
+.ant-space-item {
+  width: 100%;
+}
+
+/* Estilos para collapse */
+.ant-collapse {
+  border-radius: 12px !important;
+  overflow: hidden;
+  border: none !important;
+  background: transparent !important;
+}
+
+.ant-collapse-item {
+  border-radius: 8px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid #f0f0f0 !important;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+}
+
+.ant-collapse-item:hover {
+  border-color: #667eea !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.ant-collapse-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+}
+
+.ant-collapse-content {
+  border-top: 1px solid #f0f0f0 !important;
+  background: white !important;
+}
+
+/* Estilos del menú de categorías */
+.ant-menu-submenu-title {
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-menu-submenu-title:hover {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%) !important;
+  color: #667eea !important;
+}
+
+.ant-menu-item {
+  transition: all 0.2s ease !important;
+  border-radius: 6px !important;
+  margin: 4px 8px !important;
+}
+
+.ant-menu-item:hover {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%) !important;
+  color: #667eea !important;
+}
+
+.ant-menu-item-selected {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, transparent 100%) !important;
+  color: #667eea !important;
+  font-weight: 600;
+}
+
+/* Mejorar el checkbox del menú */
+.ant-menu-item::after {
+  border-right: 3px solid #667eea !important;
+}
+
+/* Estilos para los iconos en el card de capas */
+.ant-card-body > .ant-space > .ant-space-item > div {
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.ant-card-body > .ant-space > .ant-space-item > div:hover {
+  background: #f8f9fa;
+  transform: translateX(4px);
+}
+
+/* Scrollbar personalizado para el menú */
+.ant-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-menu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.ant-menu::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.ant-menu::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+/* Efectos para los íconos */
+.anticon {
+  transition: all 0.2s ease;
+}
+
+.anticon:hover {
+  transform: scale(1.1);
+}
+
+/* Card del filtro con efecto glassmorphism */
+.ant-card {
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important;
+}

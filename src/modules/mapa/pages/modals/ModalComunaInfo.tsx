@@ -18,7 +18,7 @@ const ModalComunaInfo: React.FC<ComunaInfoModalProps> = ({
   return (
     <Modal
       title={<strong>Información de la {selectedComuna?.comuna || ""}</strong>}
-      visible={isVisible}
+      open={isVisible}
       onCancel={onClose}
       footer={null}
       width={270}
@@ -29,8 +29,10 @@ const ModalComunaInfo: React.FC<ComunaInfoModalProps> = ({
         margin: 0,
         zIndex: 1000,
       }}
-      bodyStyle={{ backgroundColor: "rgba(255, 255, 255, 0.9)" }}
-      maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.2)", zIndex: 999 }}
+      styles={{
+        body: { backgroundColor: "rgba(255, 255, 255, 0.9)" },
+        mask: { backgroundColor: "rgba(0, 0, 0, 0.2)", zIndex: 999 },
+      }}
     >
       {selectedComuna ? (
         <div>

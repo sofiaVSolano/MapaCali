@@ -1,0 +1,168 @@
+/* Estilos globales para modales mejorados */
+
+/* Modal de información de comuna */
+.ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-radius: 16px 16px 0 0 !important;
+  border: none !important;
+  padding: 20px 24px !important;
+}
+
+.ant-modal-title {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.ant-modal-close {
+  color: white !important;
+}
+
+.ant-modal-close:hover {
+  color: #f0f0f0 !important;
+}
+
+.ant-modal-content {
+  border-radius: 16px !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+  background: #fafafa;
+}
+
+.ant-modal-body p {
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.ant-modal-body p:hover {
+  border-left-color: #667eea;
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ant-modal-body strong {
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Animaciones para modales */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ant-modal {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Estilos para formularios en modales */
+.ant-form-item-label > label {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.ant-input,
+.ant-select-selector {
+  border-radius: 8px !important;
+  border: 2px solid #e8e8e8 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-input:hover,
+.ant-select-selector:hover {
+  border-color: #667eea !important;
+}
+
+.ant-input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Botones mejorados */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+.ant-btn-default {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid #e8e8e8 !important;
+}
+
+.ant-btn-default:hover {
+  border-color: #667eea !important;
+  color: #667eea !important;
+}
+
+/* Upload de archivos */
+.ant-upload-list-picture-card-container {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.ant-upload.ant-upload-select-picture-card {
+  border-radius: 12px !important;
+  border: 2px dashed #d9d9d9 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-upload.ant-upload-select-picture-card:hover {
+  border-color: #667eea !important;
+  background: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* Tags mejorados */
+.ant-tag {
+  border-radius: 6px !important;
+  padding: 4px 12px !important;
+  font-weight: 500 !important;
+  border: none !important;
+}
+
+/* Mensajes de éxito/error */
+.ant-message-notice-content {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  padding: 12px 16px !important;
+}
+
+.ant-message-success .anticon {
+  color: #52c41a !important;
+}
+
+.ant-message-error .anticon {
+  color: #ff4d4f !important;
+}
+
+/* InfoBox personalizado */
+.leaflet-control {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}

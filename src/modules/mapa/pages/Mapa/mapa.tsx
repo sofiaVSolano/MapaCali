@@ -17,8 +17,10 @@ import * as turf from "@turf/turf";
 import { Button } from "antd";
 import ModalComunaInfo from "../modals/ModalComunaInfo";
 import CreateMarkerModal from "../modals/CreateMarkerModal";
+import CreateImageMarkerModal, { ImageMarkerData } from "../modals/CreateImageMarkerModal";
 import InfoBox from "../modals/Infobox";
 import FilterMenu from "../../../FilterMenu/pages/FilterMenu";
+import SavedMarkersPanel from "../modals/SavedMarkersPanel";
 import {
   CommuneMarkerCounts,
   ComunaProperties,
@@ -27,6 +29,7 @@ import {
 import { getListaMarcadores } from "../../../../services/mapita/mapitaAPI";
 import ReactDOMServer from "react-dom/server";
 import "./styles.css";
+import "../modals/modals.css";
 
 import {
   FaHospital,
@@ -74,10 +77,13 @@ export const Mapa: React.FC = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleCrearM, setIsModalVisibleCrearM] = useState(false);
+  const [isModalVisibleImageMarker, setIsModalVisibleImageMarker] = useState(false);
+  const [isSavedMarkersPanelVisible, setIsSavedMarkersPanelVisible] = useState(false);
 
   const [selectedComuna, setSelectedComuna] = useState<
     ComunaProperties | undefined
   >(undefined);
+  const [imageMarkers, setImageMarkers] = useState<ImageMarkerData[]>([]);
   const [showCicloRuta, setShowCicloRuta] = useState<boolean>(false);
   const [showRios, setShowRios] = useState<boolean>(false);
 
@@ -87,7 +93,32 @@ export const Mapa: React.FC = () => {
   const [counts, setCounts] = useState<CommuneMarkerCounts>({});
 
   const handleAddMarker = (newMarker: MarkerData) => {
-    setMarkers([...markers, newMarker]);
+    const updatedMarkers = [...markers, newMarker];
+    setMarkers(updatedMarkers);
+    
+    // Guardar en localStorage como backup
+    try {
+      const savedMarkers = localStorage.getItem('customMarkers');
+      const customMarkers = savedMarkers ? JSON.parse(savedMarkers) : [];
+      customMarkers.push(newMarker);
+      localStorage.setItem('customMarkers', JSON.stringify(customMarkers));
+      console.log('%cMarcador guardado en localStorage', 'color:green;font-weight:bold');
+    } catch (error) {
+      console.error('Error al guardar marcador en localStorage:', error);
+    }
+  };
+
+  const handleAddImageMarker = (newImageMarker: ImageMarkerData) => {
+    const updatedImageMarkers = [...imageMarkers, newImageMarker];
+    setImageMarkers(updatedImageMarkers);
+    
+    // Guardar en localStorage
+    try {
+      localStorage.setItem('imageMarkers', JSON.stringify(updatedImageMarkers));
+      console.log('%cMarcador de imagen guardado en localStorage', 'color:blue;font-weight:bold');
+    } catch (error) {
+      console.error('Error al guardar marcador de imagen en localStorage:', error);
+    }
   };
 
   const [heatmapData, setHeatmapData] = useState([]);
@@ -101,6 +132,17 @@ export const Mapa: React.FC = () => {
 
 
   useEffect(() => {
+    // Cargar marcadores de imagen desde localStorage
+    try {
+      const savedImageMarkers = localStorage.getItem('imageMarkers');
+      if (savedImageMarkers) {
+        setImageMarkers(JSON.parse(savedImageMarkers));
+        console.log('%cMarcadores de imagen cargados desde localStorage', 'color:blue;font-weight:bold');
+      }
+    } catch (error) {
+      console.error('Error al cargar marcadores de imagen desde localStorage:', error);
+    }
+
     const fetchGeoJson = async () => {
       try {
         getListaMarcadores();
@@ -375,6 +417,18 @@ export const Mapa: React.FC = () => {
           console.warn("La respuesta de la API no es un array");
         }
 
+        // Agregar marcadores personalizados desde localStorage
+        try {
+          const savedMarkers = localStorage.getItem('customMarkers');
+          if (savedMarkers) {
+            const customMarkers = JSON.parse(savedMarkers);
+            allMarkers.push(...customMarkers);
+            console.log('%cMarcadores personalizados cargados desde localStorage', 'color:green;font-weight:bold');
+          }
+        } catch (error) {
+          console.error('Error al cargar marcadores personalizados desde localStorage:', error);
+        }
+
         setMarkers(allMarkers);
         console.log(markers);
       } catch (error) {
@@ -495,19 +549,35 @@ export const Mapa: React.FC = () => {
   };
 
   useEffect(() => {
-    setFilteredMarkers(
-      markers.filter((marker) => selectedTypes.has(marker.tipo))
-    );
-    // }
+    // Si no hay tipos seleccionados, mostrar todos los marcadores
+    if (selectedTypes.size === 0) {
+      setFilteredMarkers(markers);
+    } else {
+      setFilteredMarkers(
+        markers.filter((marker) => selectedTypes.has(marker.tipo))
+      );
+    }
   }, [selectedTypes, markers]);
 
-  const handleTypeChange = (selectedKeys: string[]) => {
+  const handleToggleCategoryFromLegend = (category: string) => {
+    const newSelectedTypes = new Set(selectedTypes);
+    
+    if (newSelectedTypes.has(category)) {
+      // Si ya está seleccionado, lo quitamos
+      newSelectedTypes.delete(category);
+    } else {
+      // Si no está seleccionado, lo agregamos
+      newSelectedTypes.add(category);
+    }
+    
+    setSelectedTypes(newSelectedTypes);
     console.log(
-      "%chandleTypeChange",
-      "color:green;font-size:18px",
-      selectedKeys
+      "%cToggled category from legend:",
+      "color:purple;font-size:14px",
+      category,
+      "Active categories:",
+      Array.from(newSelectedTypes)
     );
-    setSelectedTypes(new Set(selectedKeys));
   };
 
   const handleToggleBoundaries = (checked: boolean) => {
@@ -692,20 +762,40 @@ export const Mapa: React.FC = () => {
   };
 
   return (
-    <div>
-      <div style={{ position: "relative" }}>
-        {/* Botón flotante para abrir el modal */}
+    <div style={{ 
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: "100vh", 
+      width: "100vw",
+      margin: 0,
+      padding: 0,
+      overflow: "hidden"
+    }}>
+      {/* Botones flotantes para abrir los modales */}
+      <div className="floating-buttons-container">
         <Button
-          type="primary"
+          className="floating-button floating-button-primary"
           onClick={() => setIsModalVisibleCrearM(true)}
-          style={{
-            position: "absolute",
-            top: "20px", // distancia desde la parte superior
-            right: "20px", // distancia desde la parte derecha
-            zIndex: 1000, // asegura que esté por encima de otros elementos
-          }}
+          icon={<span style={{ fontSize: "18px" }}>📍</span>}
         >
           Crear Marcador
+        </Button>
+        <Button
+          className="floating-button floating-button-success"
+          onClick={() => setIsModalVisibleImageMarker(true)}
+          icon={<span style={{ fontSize: "18px" }}>📸</span>}
+        >
+          Agregar Imagen
+        </Button>
+        <Button
+          className="floating-button floating-button-info"
+          onClick={() => setIsSavedMarkersPanelVisible(true)}
+          icon={<span style={{ fontSize: "18px" }}>📋</span>}
+        >
+          Ver Guardados
         </Button>
       </div>
 
@@ -715,14 +805,23 @@ export const Mapa: React.FC = () => {
         onClose={() => setIsModalVisibleCrearM(false)}
       />
 
+      <CreateImageMarkerModal
+        isVisible={isModalVisibleImageMarker}
+        onCreate={handleAddImageMarker}
+        onClose={() => setIsModalVisibleImageMarker(false)}
+      />
+
+      <SavedMarkersPanel
+        visible={isSavedMarkersPanelVisible}
+        onClose={() => setIsSavedMarkersPanelVisible(false)}
+      />
+
       <FilterMenu
-        onFilterChange={handleTypeChange}
         onToggleBoundaries={handleToggleBoundaries}
         onToggleColors={handleToggleColor}
         showBoundaries={showBoundaries}
         showColors={showColors}
         showCicloRuta={showCicloRuta}
-        onOpenModal={onOpenModal}
         onToggleCicloRutas={handleToggleCicloRuta}
         showRios={showRios}
         onToggleRios={handleToggleRios}
@@ -743,7 +842,13 @@ export const Mapa: React.FC = () => {
         center={[3.4516, -76.532]}
         id="map"
         zoom={12}
-        style={{ height: "100vh", width: "100%" }}
+        style={{ 
+          height: "100%", 
+          width: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0
+        }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -784,7 +889,7 @@ export const Mapa: React.FC = () => {
             }}
           />
         )}
-        colores marcadores populares
+        {/* colores marcadores populares */}
         {geoJsonData && showBoundaries && (
           <GeoJSON
             data={geoJsonData}
@@ -815,8 +920,12 @@ export const Mapa: React.FC = () => {
             }}
           />
         )}
-        ;
-        <InfoBox visible={showBoundaries} /> limites de las comunas y modal
+        {/* limites de las comunas y modal */}
+        <InfoBox 
+          visible={showBoundaries} 
+          selectedTypes={selectedTypes}
+          onToggleCategory={handleToggleCategoryFromLegend}
+        />
         {geoJsonDataColor && showColors && (
           <GeoJSON
             data={geoJsonDataColor}
@@ -840,6 +949,47 @@ export const Mapa: React.FC = () => {
               <Popup>{marker.nombre}</Popup>
             </Marker>
           ))}
+        </LayerGroup>
+
+        {/* Renderizar las imágenes en el mapa */}
+        <LayerGroup>
+          {imageMarkers.map((imageMarker, index) => {
+            const imageIcon = new L.Icon({
+              iconUrl: imageMarker.imageUrl,
+              iconSize: [50, 50],
+              iconAnchor: [25, 25],
+              popupAnchor: [0, -25],
+              className: 'image-marker-icon'
+            });
+
+            return (
+              <Marker
+                key={`image-${index}`}
+                position={[imageMarker.lat, imageMarker.lng]}
+                icon={imageIcon}
+              >
+                <Popup maxWidth={300}>
+                  <div style={{ textAlign: 'center' }}>
+                    {imageMarker.nombre && (
+                      <h4 style={{ marginBottom: '10px' }}>{imageMarker.nombre}</h4>
+                    )}
+                    <img 
+                      src={imageMarker.imageUrl} 
+                      alt={imageMarker.nombre || 'Imagen'}
+                      style={{ 
+                        width: '100%', 
+                        maxWidth: '250px',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <p style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+                      Lat: {imageMarker.lat.toFixed(6)}, Lng: {imageMarker.lng.toFixed(6)}
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
         </LayerGroup>
       </MapContainer>
     </div>

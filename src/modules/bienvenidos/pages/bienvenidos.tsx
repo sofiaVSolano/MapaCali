@@ -1,11 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./bienvenidos.css";
 import { Link } from "react-router-dom";
 import { LatLngExpression } from 'leaflet';
+import { Card, Typography, Row, Col, Button, Tag } from "antd";
+import { EnvironmentOutlined, TeamOutlined, RocketOutlined, AppstoreOutlined } from "@ant-design/icons";
 
-export const BaseMap: React.FC = () => {
+const { Title, Paragraph, Text } = Typography;
+
+export const BaseMap = () => {
   const MapRefresher = () => {
     const map = useMap();
     useEffect(() => {
@@ -17,49 +21,145 @@ export const BaseMap: React.FC = () => {
   const position: LatLngExpression = [3.4516, -76.5325];
 
   return (
-    <MapContainer center={position} zoom={12} style={{ height: "100vh", width: "100%" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <MapRefresher />
-    </MapContainer>
+    <div className="map-wrapper">
+      <div className="map-overlay-info">
+        <Card className="map-info-card">
+          <Text strong style={{ fontSize: '16px' }}>📍 Santiago de Cali</Text>
+          <br />
+          <Text type="secondary" style={{ fontSize: '12px' }}>Lat: 3.4516, Lng: -76.5325</Text>
+        </Card>
+      </div>
+      <MapContainer center={position} zoom={12} style={{ height: "100vh", width: "100%" }}>
+        <TileLayer 
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='© OpenStreetMap contributors'
+        />
+        <MapRefresher />
+      </MapContainer>
+    </div>
   );
 };
 
-const SideMenu: React.FC = () => {
+const SideMenu = () => {
   return (
     <div className="side-menu">
-      <h2>Introducción del Proyecto</h2>
-      <p>
-        Este proyecto está enfocado en mostrar un mapa interactivo de la ciudad de Santiago de Cali,
-        incluyendo puntos de interés y categorías como colegios, hospitales, monumentos, etc.
-        También cuenta con delimitadores de comunas y herramientas visuales que ayudan a comprender mejor
-        la distribución de la ciudad y sus zonas de interés.
-      </p>
-      <img src="Icons/cali.jpg" alt="Santiago de Cali" className="city-image" />
-      
-      <h3>Propósito del Proyecto</h3>
-      <p>
-        El propósito es visualizar información clave sobre la ciudad, como la ubicación
-        de infraestructuras importantes y zonas de interés, con funcionalidades interactivas.
-      </p>
+      <div className="side-menu-content">
+        {/* Header con logo */}
+        <div className="header-section">
+          <div className="logo-container">
+            <EnvironmentOutlined className="logo-icon" />
+          </div>
+          <Title level={2} className="main-title">
+            Mapa Interactivo de Cali
+          </Title>
+          <Paragraph className="subtitle">
+            <Tag color="green">Sistema GIS</Tag>
+            <Tag color="blue">Visualización de Datos</Tag>
+            <Tag color="purple">Análisis Espacial</Tag>
+          </Paragraph>
+        </div>
 
-      <h4>Integrantes</h4>
-      <p>
-        - Jhonny Cataño Rodriguez <br />
-        - Jhon Esteban Hernandez
-      </p>
+        {/* Introducción */}
+        <Card className="intro-card" bordered={false}>
+          <div className="card-icon">
+            <RocketOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+          </div>
+          <Title level={4}>Acerca del Proyecto</Title>
+          <Paragraph className="description">
+            Plataforma interactiva para visualizar y analizar información geoespacial 
+            de Santiago de Cali, incluyendo infraestructura urbana, estadísticas de seguridad, 
+            y zonas de interés de las 22 comunas.
+          </Paragraph>
+        </Card>
 
-      {/* Botones de navegación */}
-      <div className="button-container">
-        <Link to="/map" className="map-button">Mapa Principal</Link>
-        <Link to="/api-google" className="map-button">API Google</Link>
-        <Link to="/proyecciones" className="map-button">Proyecciones Datos en Cali</Link>
-        <Link to="/cluster" className="map-button">Cluster</Link>
+        {/* Características */}
+        <Card className="features-card" bordered={false}>
+          <div className="card-icon">
+            <AppstoreOutlined style={{ fontSize: '24px', color: '#52c41a' }} />
+          </div>
+          <Title level={4}>Características</Title>
+          <ul className="features-list">
+            <li>📍 Marcadores de puntos de interés</li>
+            <li>🗺️ Delimitación de 22 comunas</li>
+            <li>🔥 Mapas de calor (homicidios, robos, accidentes)</li>
+            <li>📸 Agregar imágenes con ubicación</li>
+            <li>📊 Análisis y proyecciones de datos</li>
+            <li>🎯 Clustering inteligente</li>
+          </ul>
+        </Card>
+
+        {/* Imagen de la ciudad */}
+        <div className="city-image-container">
+          <img src="Icons/cali.jpg" alt="Santiago de Cali" className="city-image" />
+          <div className="image-overlay">
+            <Text strong style={{ color: 'white' }}>Santiago de Cali, Colombia</Text>
+          </div>
+        </div>
+
+        {/* Integrantes */}
+        <Card className="team-card" bordered={false}>
+          <div className="card-icon">
+            <TeamOutlined style={{ fontSize: '24px', color: '#faad14' }} />
+          </div>
+          <Title level={4}>Equipo de Desarrollo</Title>
+          <div className="team-members">
+            <div className="member">
+              <div className="member-avatar">MC</div>
+              <Text strong>Mariana Cruz</Text>
+            </div>
+            <div className="member">
+              <div className="member-avatar">SV</div>
+              <Text strong>Sofia Valencia</Text>
+            </div>
+            <div className="member">
+              <div className="member-avatar">MR</div>
+              <Text strong>Maria Jose Ramirez</Text>
+            </div>
+          </div>
+        </Card>
+
+        {/* Botones de navegación */}
+        <div className="navigation-section">
+          <Title level={5} style={{ marginBottom: '16px', textAlign: 'center' }}>
+            Explorar el Sistema
+          </Title>
+          <Row gutter={[12, 12]}>
+            <Col span={12}>
+              <Link to="/map" className="nav-link">
+                <Button type="primary" size="large" block className="nav-button primary">
+                  🗺️ Mapa Principal
+                </Button>
+              </Link>
+            </Col>
+            <Col span={12}>
+              <Link to="/api-google" className="nav-link">
+                <Button size="large" block className="nav-button google">
+                  🌐 API Google
+                </Button>
+              </Link>
+            </Col>
+            <Col span={12}>
+              <Link to="/proyecciones" className="nav-link">
+                <Button size="large" block className="nav-button proyecciones">
+                  📈 Proyecciones
+                </Button>
+              </Link>
+            </Col>
+            <Col span={12}>
+              <Link to="/cluster" className="nav-link">
+                <Button size="large" block className="nav-button cluster">
+                  🎯 Clustering
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+        </div>
       </div>
     </div>
   );
 };
 
-export const Bienvenidos: React.FC = () => {
+export const Bienvenidos = () => {
   return (
     <div className="main-container">
       <SideMenu />
