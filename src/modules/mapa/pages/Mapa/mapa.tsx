@@ -10,6 +10,7 @@ import {
   GeoJSON,
   LayerGroup,
   Circle,
+  Polyline,
 } from "react-leaflet";
 import L, { PathOptions } from "leaflet";
 import "leaflet.heat";
@@ -22,6 +23,7 @@ import CreateMarkerModal from "../modals/CreateMarkerModal";
 import CreateImageMarkerModal, { ImageMarkerData } from "../modals/CreateImageMarkerModal";
 import InfoBox from "../modals/Infobox";
 import TouristControls from "../modals/TouristControls";
+import RouteSimulator from "../modals/RouteSimulator";
 import FilterMenu from "../../../FilterMenu/pages/FilterMenu";
 import SavedMarkersPanel from "../modals/SavedMarkersPanel";
 import {
@@ -57,6 +59,7 @@ import { GiColombia } from "react-icons/gi";
 import { IoLibrary } from "react-icons/io5";
 import { FaRoadBarrier } from "react-icons/fa6";
 import HeatmapLayer from "./mapita";
+import MapClickHandler from "./MapClickHandler";
 
 function MapErrorFallback({ error }: { error: Error }) {
   return (
@@ -117,6 +120,12 @@ export const Mapa: React.FC = () => {
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [showTourismHeat, setShowTourismHeat] = useState<boolean>(false);
+
+  // Simulador de rutas
+  const [routeModeActive, setRouteModeActive] = useState<boolean>(false);
+  const [routeOrigin, setRouteOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [routeDestinations, setRouteDestinations] = useState<Array<{id: string; nombre: string; tipo: string; lat: number; lng: number; distanceKm?: number; selected: boolean}>>([]);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
   const handleAddMarker = (newMarker: MarkerData) => {
     const updatedMarkers = [...markers, newMarker];
@@ -747,6 +756,67 @@ export const Mapa: React.FC = () => {
     return src.map((m) => [m.lat, m.lng, Math.max(0.5, Math.min(2, (m.rating || 4) / 2.5))]);
   }, [filteredMarkers, markers]);
 
+  // Rutas: calcular destinos importantes cuando el origen cambia
+  useEffect(() => {
+    if (!routeOrigin || markers.length === 0) {
+      setRouteDestinations([]);
+      return;
+    }
+
+    // Filtrar lugares más importantes: monumentos, parques, centros comerciales con rating alto
+    const importantTypes = new Set(['monumentos', 'parques', 'centros comerciales', 'hoteles', 'universidades']);
+    const candidates = markers.filter(m => importantTypes.has(m.tipo) && m.rating && m.rating >= 3.5);
+
+    // Calcular distancias y ordenar
+    const withDistances = candidates.map(m => {
+      const dist = distanceKm(routeOrigin, { lat: m.lat, lng: m.lng });
+      return {
+        id: m.id || `${m.nombre}-${m.lat}-${m.lng}`,
+        nombre: m.nombre,
+        tipo: m.tipo,
+        lat: m.lat,
+        lng: m.lng,
+        distanceKm: dist,
+        selected: false,
+      };
+    }).sort((a, b) => a.distanceKm! - b.distanceKm!);
+
+    // Preseleccionar los primeros 5
+    const top = withDistances.slice(0, 10).map((d, idx) => ({...d, selected: idx < 5}));
+    setRouteDestinations(top);
+  }, [routeOrigin, markers]);
+
+  const handleToggleRouteMode = (active: boolean) => {
+    setRouteModeActive(active);
+    if (!active) {
+      setRouteOrigin(null);
+      setRouteDestinations([]);
+      setIsSimulating(false);
+    }
+  };
+
+  const handleClearOrigin = () => {
+    setRouteOrigin(null);
+    setRouteDestinations([]);
+    setIsSimulating(false);
+  };
+
+  const handleToggleDestination = (id: string) => {
+    setRouteDestinations(prev => prev.map(d => d.id === id ? {...d, selected: !d.selected} : d));
+  };
+
+  const handleStartSimulation = () => {
+    setIsSimulating(true);
+    // Simular por 3 segundos y luego apagar
+    setTimeout(() => setIsSimulating(false), 3000);
+  };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    if (routeModeActive && !routeOrigin) {
+      setRouteOrigin({ lat, lng });
+    }
+  };
+
   const handleToggleCicloRuta = (checked: boolean) => {
     setShowCicloRuta(checked);
   };
@@ -1002,6 +1072,7 @@ export const Mapa: React.FC = () => {
         onToggleAccidentesA2018={handleToggleAccidentesA2018}
         onToggleAccidentesA2019={handleToggleAccidentesA2019}
       />
+
       <MapContainer
         center={[3.4516, -76.532]}
         id="map"
@@ -1018,6 +1089,7 @@ export const Mapa: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="© OpenStreetMap contributors"
         />
+        <MapClickHandler enabled={routeModeActive} onMapClick={handleMapClick} />
         {showCicloRuta && cicloRutaGeoJson && (
           <GeoJSON
             data={cicloRutaGeoJson}
@@ -1118,6 +1190,33 @@ export const Mapa: React.FC = () => {
           onClose={() => setIsModalVisible(false)}
         />
         {/* Renderizar los marcadores filtrados */}
+        {routeOrigin && (
+          <LayerGroup>
+            <Marker position={[routeOrigin.lat, routeOrigin.lng]} icon={new L.DivIcon({
+              html: '<div style="width:24px;height:24px;background:#52c41a;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
+              className: 'route-origin-icon',
+              iconSize: [24,24],
+              iconAnchor: [12,12]
+            })}>
+              <Popup>📍 Punto de Origen</Popup>
+            </Marker>
+          </LayerGroup>
+        )}
+        {routeOrigin && routeDestinations.filter(d => d.selected).map((dest) => (
+          <Polyline
+            key={dest.id}
+            positions={[
+              [routeOrigin.lat, routeOrigin.lng],
+              [dest.lat, dest.lng]
+            ]}
+            pathOptions={{
+              color: isSimulating ? '#faad14' : '#1890ff',
+              weight: isSimulating ? 4 : 3,
+              opacity: isSimulating ? 0.9 : 0.6,
+              dashArray: isSimulating ? undefined : '10, 5'
+            }}
+          />
+        ))}
         {userLocation && (
           <LayerGroup>
             <Marker position={[userLocation.lat, userLocation.lng]} icon={new L.DivIcon({
@@ -1246,6 +1345,17 @@ export const Mapa: React.FC = () => {
             })}
         </LayerGroup>
       </MapContainer>
+
+      <RouteSimulator
+        routeModeActive={routeModeActive}
+        onToggleRouteMode={handleToggleRouteMode}
+        originPoint={routeOrigin}
+        onClearOrigin={handleClearOrigin}
+        destinations={routeDestinations}
+        onToggleDestination={handleToggleDestination}
+        onStartSimulation={handleStartSimulation}
+        isSimulating={isSimulating}
+      />
       </div>
     </ErrorBoundary>
   );
